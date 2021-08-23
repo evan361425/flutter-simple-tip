@@ -14,3 +14,9 @@ dependencies:
     sdk: flutter
   simple_tip:
     path: ../
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # code style
+  pedantic: ^1.11.0
