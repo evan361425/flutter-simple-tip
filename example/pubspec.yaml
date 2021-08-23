@@ -1,0 +1,16 @@
+name: flutter_test_example
+description: A Flutter Package (Demo) to render simple_tip.
+homepage: https://github.com/evan361425/flutter-simple-tip
+
+version: 1.0.0+1
+
+publish_to: "none"
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  simple_tip:
+    path: ../

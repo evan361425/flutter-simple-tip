@@ -1,0 +1,19 @@
+name: simple_tip
+version: 1.0.0
+description: >-
+  A widget for showing tips to it's child that automatically setup position
+repository: https://github.com/dart-lang/shelf
+
+environment:
+  sdk: ">=2.12.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # code style
+  pedantic: ^1.11.0
