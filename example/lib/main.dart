@@ -14,13 +14,13 @@ class TipScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(children: [
-            Tip(
+            SimpleTip(
               title: 'example title',
               message: 'This tip will show bellow left',
               child: BlockOfText('Top Left Widget', Colors.amber),
             ),
             Spacer(),
-            Tip(
+            SimpleTip(
               message: 'This tip will show bellow right',
               child: BlockOfText('Top Right Widget', Colors.indigo),
             ),
@@ -30,7 +30,7 @@ class TipScreen extends StatelessWidget {
                 .push(MaterialPageRoute(builder: (_) => TipOrderedScreen())),
             child: Text('Try Ordered Tips'),
           ),
-          Tip(
+          SimpleTip(
             message: 'This tip will show above',
             child: BlockOfText('Bottom Widget', Colors.cyan),
           ),
@@ -49,7 +49,7 @@ class TipOrderedScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Row(children: [
-            TipOrdered(
+            OrderedTip(
               groupId: 'group1',
               id: 'tip1',
               order: 1,
@@ -58,7 +58,7 @@ class TipOrderedScreen extends StatelessWidget {
               child: BlockOfText('Top Left Widget', Colors.amber),
             ),
             Spacer(),
-            TipOrdered(
+            OrderedTip(
               groupId: 'group1',
               id: 'tip3',
               order: 3,
@@ -67,7 +67,7 @@ class TipOrderedScreen extends StatelessWidget {
               child: BlockOfText('Top Right Widget', Colors.indigo),
             ),
           ]),
-          TipOrdered(
+          OrderedTip(
             groupId: 'group1',
             id: 'tip2',
             order: 2,

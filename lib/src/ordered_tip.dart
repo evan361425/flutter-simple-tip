@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 
-import 'tip.dart';
+import 'simple_tip.dart';
 import 'tip_content.dart';
 
-class TipOrdered extends StatefulWidget {
+class OrderedTip extends StatefulWidget {
   static final groups = <String, _RadioGroup>{};
 
   static final _inMemoryRecords = <String, int>{};
@@ -11,7 +11,7 @@ class TipOrdered extends StatefulWidget {
   /// Get [version] of tip from your filesystem, eg: SharedPreferences, hive
   ///
   /// Default using in-memory records version.
-  /// You should setup your getter method!
+  /// **You should setup your getter method!**
   static int Function(String groupId, String id) getVersion =
       (groupId, id) => _inMemoryRecords['$groupId.$id'] ?? 0;
 
@@ -28,50 +28,61 @@ class TipOrdered extends StatefulWidget {
   /// It should be unique in the same group
   final String id;
 
-  /// ID of the group that contains many [TipOrdered]
+  /// ID of the group that contains many [OrderedTip]
   ///
   /// It should be unique between each groups.
   ///
-  /// If one screen have multiple groups,
-  /// it is possible to show many tips in one screen.
+  /// If one screen have multiple groups, it is possible to
+  /// show many tips in one screen.
   final String groupId;
 
-  /// Title of [Tip]
+  /// Title of [SimpleTip]
   ///
-  /// See details in [Tip.title]
+  /// See details in [SimpleTip.title]
   final String? title;
 
-  /// Message of [Tip]
+  /// Message of [SimpleTip]
   ///
-  /// See details in [Tip.message]
+  /// See details in [SimpleTip.message]
   final String? message;
 
-  /// Content builder for [Tip]
+  /// Content builder for [SimpleTip]
   ///
-  /// See details in [Tip.contentBuilder]
+  /// See details in [SimpleTip.contentBuilder]
   final ContentBuilder? contentBuilder;
 
   /// The version it should be.
   ///
-  /// [Tip.isDisabled] will be `false` if version is not equal
-  /// to storage's version. else [Tip.isDisabled] will be `true`.
+  /// [SimpleTip.isDisabled] will be `false` if version is not equal
+  /// to given version from [getVersion]
   ///
   /// Implement:
   /// ```
   /// if (TipOrdered.getVersion(groupId, id) != version) {
   ///   enabledTip = id;
+  ///   break; // break the loop
   /// }
   /// ```
   ///
   /// Default set to `0`.
   final int version;
 
+  /// The order to show the tip, lower order higher priority.
+  ///
+  /// Implement:
+  /// ```
+  /// tipList.sort((a, b) => a.order.compareTo(b.order))
+  /// ```
+  ///
+  /// Default set to `0`.
+  final int order;
+
   /// The widget below this widget in the tree.
   ///
   /// {@macro flutter.widgets.ProxyWidget.child}
   final Widget child;
 
-  TipOrdered({
+  OrderedTip({
     Key? key,
     required this.id,
     required this.groupId,
@@ -80,7 +91,7 @@ class TipOrdered extends StatefulWidget {
     this.contentBuilder,
     this.version = 0,
     required this.child,
-    int order = 0,
+    this.order = 0,
   }) : super(key: key) {
     group.addCandidate(id: id, version: version, order: order);
   }
@@ -96,17 +107,17 @@ class TipOrdered extends StatefulWidget {
   }
 
   @override
-  TipOrderedState createState() => TipOrderedState();
+  OrderedTipState createState() => OrderedTipState();
 }
 
-class TipOrderedState extends State<TipOrdered> {
+class OrderedTipState extends State<OrderedTip> {
   _RadioGroup get group => widget.group;
 
   bool get isDisabled => widget.group.isNotLeader(widget.id);
 
   @override
   Widget build(BuildContext context) {
-    return Tip(
+    return SimpleTip(
       title: widget.title,
       message: widget.message,
       isDisabled: isDisabled,
@@ -168,7 +179,7 @@ class _RadioGroup {
   void removeCandidate(String id) {
     candidates.remove(id);
     if (candidates.isEmpty) {
-      TipOrdered.groups.remove(groupId);
+      OrderedTip.groups.remove(groupId);
     }
   }
 
@@ -180,7 +191,7 @@ class _RadioGroup {
   }
 
   void retire(String id) async {
-    await TipOrdered.setVersion(groupId, id, candidates[id]!.version);
+    await OrderedTip.setVersion(groupId, id, candidates[id]!.version);
     // there is no tip enabled, now we can research
     Future.delayed(Duration(seconds: 0), () => reset());
   }
@@ -201,7 +212,7 @@ class _RadioGroup {
 
     leader = null;
     for (final candidate in sortedCandidates) {
-      if (TipOrdered.getVersion(groupId, candidate.id) != candidate.version) {
+      if (OrderedTip.getVersion(groupId, candidate.id) != candidate.version) {
         leader = candidate.id;
         break;
       }

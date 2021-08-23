@@ -1,3 +1,3 @@
+export 'src/ordered_tip.dart';
 export 'src/shapes/tip_shape_border.dart';
-export 'src/tip.dart';
-export 'src/tip_ordered.dart';
+export 'src/simple_tip.dart';

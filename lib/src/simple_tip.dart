@@ -20,7 +20,7 @@ import 'tip_content.dart';
 ///   );
 /// }
 /// ```
-class Tip extends StatefulWidget {
+class SimpleTip extends StatefulWidget {
   /// The title to display in the tip.
   final String? title;
 
@@ -50,14 +50,11 @@ class Tip extends StatefulWidget {
   ///
   /// Default:
   /// ```
-  /// BoxConstraints(
-  ///   minHeight: 24.0,
-  ///   maxWidth: MediaQuery.of(context).size.width * 0.8,
-  /// )
+  /// BoxConstraints(minHeight: 24.0)
   /// ```
   final BoxConstraints? boxConstraints;
 
-  /// Background color of tip
+  /// Tip's container decoration
   ///
   /// Default:
   /// ```
@@ -68,7 +65,7 @@ class Tip extends StatefulWidget {
   /// ```
   final Decoration? decoration;
 
-  /// Text color of tip
+  /// Tip's text default style
   ///
   /// Default:
   /// ```
@@ -120,6 +117,8 @@ class Tip extends StatefulWidget {
   /// tips will position themselves under their corresponding widgets.
   /// Otherwise, tips will position themselves above their corresponding
   /// widgets with the given offset.
+  ///
+  /// Default: `24.0`
   final double verticalOffset;
 
   /// Text of button to close tip.
@@ -136,11 +135,13 @@ class Tip extends StatefulWidget {
   /// tree.
   ///
   /// Defaults to false. A tip will add a [Semantics] label that is set to
-  /// [Tip.message]. Set this property to true if the app is going to
+  /// [SimpleTip.message]. Set this property to true if the app is going to
   /// provide its own custom semantics label.
   final bool excludeFromSemantics;
 
   /// Disable tip.
+  ///
+  /// Wrap [SimpleTip] with `StatefulWidget` and dynamically set this value.
   ///
   /// Default: `false`
   final bool isDisabled;
@@ -157,7 +158,7 @@ class Tip extends StatefulWidget {
   /// {@macro flutter.widgets.ProxyWidget.child}
   final Widget child;
 
-  const Tip({
+  const SimpleTip({
     Key? key,
     this.title,
     this.message,
@@ -179,10 +180,11 @@ class Tip extends StatefulWidget {
         super(key: key);
 
   @override
-  TipState createState() => TipState();
+  SimpleTipState createState() => SimpleTipState();
 }
 
-class TipState extends State<Tip> with SingleTickerProviderStateMixin {
+class SimpleTipState extends State<SimpleTip>
+    with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   OverlayEntry? _entry;
   Timer? _showTimer;
