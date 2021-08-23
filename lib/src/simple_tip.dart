@@ -266,7 +266,12 @@ class SimpleTipState extends State<SimpleTip>
     // rebuilds.
     if (!_backdropIsBuilt) {
       final Widget backdropOverlay = SizedBox.expand(
-        child: GestureDetector(onTap: () => _backdropCb.forEach((cb) => cb())),
+        child: GestureDetector(onTap: () {
+          // avoid ConcurrentModificationError: changing iteration during iterate
+          _workingTips++;
+          _backdropCb.forEach((cb) => cb());
+          _removeBackdrop();
+        }),
       );
       _backdrop = OverlayEntry(builder: (_) => backdropOverlay);
       overlayState.insert(_backdrop!);
@@ -318,10 +323,15 @@ class SimpleTipState extends State<SimpleTip>
     _entry?.remove();
     _entry = null;
     if (--_workingTips == 0) {
-      _backdrop?.remove();
-      _backdrop = null;
-      _backdropIsBuilt = false;
-      _backdropCb.clear();
+      _removeBackdrop();
     }
+  }
+
+  void _removeBackdrop() {
+    _backdrop?.remove();
+    _backdrop = null;
+    _backdropIsBuilt = false;
+    _backdropCb.clear();
+    _workingTips = 0;
   }
 }

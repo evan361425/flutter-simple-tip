@@ -43,8 +43,7 @@ class TipContent extends StatelessWidget {
     required this.animation,
     required this.hideTip,
     required this.target,
-  })  : assert(message != null || contentBuilder != null),
-        super(key: key);
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

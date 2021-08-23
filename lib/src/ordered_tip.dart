@@ -12,16 +12,18 @@ class OrderedTip extends StatefulWidget {
   ///
   /// Default using in-memory records version.
   /// **You should setup your getter method!**
-  static int Function(String groupId, String id) getVersion =
-      (groupId, id) => _inMemoryRecords['$groupId.$id'] ?? 0;
+  static int Function(String groupId, String id) getVersion = (groupId, id) {
+    return _inMemoryRecords['$groupId.$id'] ?? 0;
+  };
 
   /// Set [version] of tip after user manually close it
   ///
   /// Default using in-memory records version.
   /// You should setup your setter method!
   static Future<void> Function(String groupId, String id, int version)
-      setVersion = (groupId, id, version) async =>
-          _inMemoryRecords['$groupId.$id'] = version;
+      setVersion = (groupId, id, version) async {
+    _inMemoryRecords['$groupId.$id'] = version;
+  };
 
   /// ID of this tip.
   ///
@@ -184,10 +186,13 @@ class _RadioGroup {
   }
 
   void reset() {
+    final oldLeader = leader;
     startElection();
-    candidates.values.forEach((candidate) {
-      candidate.builder();
-    });
+    if (oldLeader != leader) {
+      candidates.values.forEach((candidate) {
+        candidate.builder();
+      });
+    }
   }
 
   void retire(String id) async {
