@@ -4,9 +4,9 @@ A simple tip telling user what this widget(object) is doing for.
 
 **This package is built by my project [POS-System](https://github.com/evan361425/flutter-pos-system).**
 
-| All in One                | Ordered                           |
-| ------------------------- | --------------------------------- |
-| ![](images/tip-short.gif) | ![](images/tip_ordered-short.gif) |
+| All in One                                                                             | Ordered                                                                                        |
+| -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
+| ![](https://github.com/evan361425/flutter-simple-tip/blob/master/images/tip-short.gif) | ![](https://github.com/evan361425/flutter-simple-tip/blob/master/images/tip_ordered-short.gif) |
 
 ## How to use
 
