@@ -1,0 +1,1 @@
+- Use `StateManager` instead of static methods
