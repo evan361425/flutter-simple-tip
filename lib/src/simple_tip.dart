@@ -210,18 +210,14 @@ class SimpleTipState extends State<SimpleTip>
 
   @override
   void deactivate() {
-    if (_entry != null) {
-      _removeEntry();
-    }
+    _removeEntry();
     _showTimer?.cancel();
     super.deactivate();
   }
 
   @override
   void dispose() {
-    if (_entry != null) {
-      _removeEntry();
-    }
+    _removeEntry();
     _controller.dispose();
     super.dispose();
   }
@@ -318,12 +314,14 @@ class SimpleTipState extends State<SimpleTip>
   }
 
   void _removeEntry() {
-    _showTimer?.cancel();
-    _showTimer = null;
-    _entry?.remove();
-    _entry = null;
-    if (--_workingTips == 0) {
-      _removeBackdrop();
+    if (_entry != null) {
+      _showTimer?.cancel();
+      _showTimer = null;
+      _entry!.remove();
+      _entry = null;
+      if (--_workingTips == 0) {
+        _removeBackdrop();
+      }
     }
   }
 
