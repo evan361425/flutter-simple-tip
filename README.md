@@ -6,7 +6,7 @@
 
 A widget for showing tips to it's child that automatically setup position.
 
-**This package is separated from my project [POS-System](https://github.com/evan361425/flutter-pos-system).**
+> This package is separated from my project [POS-System](https://github.com/evan361425/flutter-pos-system).
 
 | All in One                                                                             | Ordered                                                                                        |
 | -------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------- |
@@ -62,10 +62,14 @@ Two main widget you can use, `SimpleTip` and `OrderedTip`.
 ### SimpleTip
 
 - `title`, `String?`, `null`
+
   - The title to display in the tip.
+
 - `message`, `String?`, `null`
+
   - The message to display in the tip. **MUST** set if `contentBuilder` not set.
   - This value will also use for semantics.
+
 - `contentBuilder`, `Widget Function(BuildContext, VoidCallback)?`, `null`
   - Builder for building tip's content.
   - This will "win" when `message` and `contentBuilder` both set.
@@ -83,7 +87,9 @@ final contentBuilder = (BuilderContext context, VoidCallback closer) {
 ```
 
 - `boxConstraints`, `BoxConstraints?`, `BoxConstraints(minHeight: 24.0)`
+
   - Tip's content constraints
+
 - `decoration`, `Decoration?`, see below
   - Tip's container decoration
   - Default:
@@ -118,27 +124,43 @@ final onClosed = () {
 ```
 
 - `padding`, `EdgeInsets`, `EdgeInsets.all(8.0)`
+
   - The amount of space by which to inset the tip's content.
+
 - `margin`, `EdgeInsets`, `EdgeInsets.symmetric(horizontal: 16.0)`
+
   - The empty space that surrounds the tip.
   - Defines the tip's outer [Container.margin]. By default, a long tip will span the width of its window. If long enough, a tip might also span the window's height. This property allows one to define how much space the tip must be inset from the edges of their display window.
+
 - `verticalOffset`, `double`, `24.0`
+
   - The vertical gap between the widget and the displayed tip.
   - When `preferBelow` is set to true and tips have sufficient space to display themselves, this property defines how much vertical space tips will position themselves under their corresponding widgets. Otherwise, tips will position themselves above their corresponding widgets with the given offset.
+
 - `closerText`, `String`, `OK`
+
   - Text of button to close tip.
+
 - `waitDuration`, `Duration`, `Duration.zero`
+
   - The length of time that a tip will wait for showing.
   - Defaults to 0 milliseconds (tips are shown immediately after created).
+
 - `excludeFromSemantics`, `bool`, `false`
+
   - Whether the tip's `SimpleTip.message` should be excluded from the semantics tree.
   - A tip will add a `Semantics` label that is set to `SimpleTip.message`. Set this property to true if the app is going to provide its own custom semantics label.
+
 - `isDisabled`, `bool`, `false`
+
   - Disable tip.
   - Wrap `SimpleTip` with `StatefulWidget` and dynamically set this value.
+
 - `preferBelow`, `bool`, `true`
+
   - Whether the tips defaults to being displayed below the widget.
   - Defaults to true. If there is insufficient space to display the tip in the preferred direction, the tip will be displayed in the opposite direction.
+
 - `child`, `Widget`, **required**
   - The widget below this widget in the tree.
 
@@ -147,12 +169,16 @@ final onClosed = () {
 > **IMPORTANT** you should set up static property `stateManager` to "remember" that user had read this tip.
 
 - `id`, `String`, **required**
+
   - ID of this tip.
   - It should be unique in the same group
+
 - `groupId`, `String`, **required**
+
   - ID of the group that contains many `OrderedTip`
   - It should be unique between each groups.
   - If one screen have multiple groups, it should show many tips in one screen.
+
 - `version`, `int`, `0`
   - The version it should be.
   - `SimpleTip.isDisabled` will be `false` if version is not equal to given version from `static getVersion`.
