@@ -1,5 +1,9 @@
 # Simple Tip
 
+[![codecov](https://codecov.io/gh/evan361425/flutter-simple-tip/branch/master/graph/badge.svg?token=2Lx6Ozhzjw)](https://codecov.io/gh/evan361425/flutter-simple-tip)
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/29d3892a0deb4ea79a6def655f5adae1)](https://www.codacy.com/gh/evan361425/flutter-simple-tip/dashboard?utm_source=github.com&utm_medium=referral&utm_content=evan361425/flutter-simple-tip&utm_campaign=Badge_Grade)
+![Pub Version](https://img.shields.io/pub/v/simple-tip)
+
 A simple tip telling user what this widget(object) is doing for.
 
 **This package is built by my project [POS-System](https://github.com/evan361425/flutter-pos-system).**
