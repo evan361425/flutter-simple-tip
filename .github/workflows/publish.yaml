@@ -68,19 +68,22 @@ jobs:
 
       - name: Update changelog
         run: |
-          echo "## ${{ needs.vars.outputs.tag }} $(date +"%F")\n\n${{ needs.vars.outputs.changelog }}\n" > CHANGELOG.md
+          printf "## ${{ needs.vars.outputs.tag }} $(date +"%F")\n\n${{ needs.vars.outputs.changelog }}\n" > CHANGELOG.md
           echo "${{ steps.changelog.outputs.value }}" >> CHANGELOG.md
 
       - name: Commit and push
-        uses: actions-js/push@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          message: "Bump to ${{ needs.vars.outputs.tag }}"
+        run: |
+          git config remote.origin.url 'git@github.com/${{ github.repository }}.git'
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git commit . -m "Bump to ${{ needs.vars.outputs.tag }}"
+          git push origin HEAD:master
 
   draft-release:
     runs-on: ubuntu-latest
     needs:
       - vars
+    if: ${{ never() }}
     steps:
       - name: Draft release with changelog
         id: create_release
