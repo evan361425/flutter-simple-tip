@@ -71,12 +71,11 @@ jobs:
           echo "## ${{ needs.vars.outputs.tag }} $(date +"%F")\n\n${{ needs.vars.outputs.changelog }}\n" > CHANGELOG.md
           echo "${{ steps.changelog.outputs.value }}" >> CHANGELOG.md
 
-      - name: Commit
-        run: |
-          git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git commit . -m "Bump to ${{ needs.vars.outputs.tag }}"
-          git push origin HEAD:master
+      - name: Commit and push
+        uses: actions-js/push@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          message: "Bump to ${{ needs.vars.outputs.tag }}"
 
   draft-release:
     runs-on: ubuntu-latest
