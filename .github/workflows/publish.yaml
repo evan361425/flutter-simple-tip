@@ -83,7 +83,7 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - vars
-    if: ${{ never() }}
+      - update-changelog
     steps:
       - name: Draft release with changelog
         id: create_release
