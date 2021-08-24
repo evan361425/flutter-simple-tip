@@ -130,7 +130,7 @@ final onClosed = () {
 - `margin`, `EdgeInsets`, `EdgeInsets.symmetric(horizontal: 16.0)`
 
   - The empty space that surrounds the tip.
-  - Defines the tip's outer [Container.margin]. By default, a long tip will span the width of its window. If long enough, a tip might also span the window's height. This property allows one to define how much space the tip must be inset from the edges of their display window.
+  - Defines the tip's outer `Container.margin`. By default, a long tip will span the width of its window. If long enough, a tip might also span the window's height. This property allows one to define how much space the tip must be inset from the edges of their display window.
 
 - `verticalOffset`, `double`, `24.0`
 
