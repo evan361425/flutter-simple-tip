@@ -89,7 +89,7 @@ jobs:
         with:
           tag_name: ${{ needs.vars.outputs.tag }}
           release_name: ${{ needs.vars.outputs.tag }}
-          body: ${{ steps.vars.outputs.changelog }}
+          body: ${{ needs.vars.outputs.changelog }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
