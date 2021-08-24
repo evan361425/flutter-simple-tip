@@ -70,7 +70,8 @@ jobs:
 
       - name: Update changelog
         run: |
-          echo "## ${{ needs.vars.outputs.tag }} $(date +"%F")\n\n${{ needs.vars.outputs.changelog }}\n\n" > CHANGELOG.md
+          CHANGELOG='${{ needs.vars.outputs.changelog }}'
+          print "## ${{ needs.vars.outputs.tag }} $(date +"%F")\n\n$CHANGELOG\n\n" > CHANGELOG.md
           echo "${{ steps.changelog.outputs.value }}" >> CHANGELOG.md
 
       - name: Commit and push
