@@ -1,29 +1,26 @@
 import 'package:flutter/material.dart';
 
 import 'simple_tip.dart';
+import 'state_manager/in_memory_state_manager.dart';
+import 'state_manager/state_manager.dart';
 import 'tip_content.dart';
 
 class OrderedTip extends StatefulWidget {
+  /// Groups of all ordered tip.
+  ///
+  /// Expose this for public is only make developer easier controll
+  /// their resources, you **SHOULD NOT** depends this.
+  ///
+  /// It may set to `private` in future.
   static final groups = <String, _RadioGroup>{};
 
-  static final _inMemoryRecords = <String, int>{};
-
-  /// Get [version] of tip from your filesystem, eg: SharedPreferences, hive
+  /// Manage the versions state.
   ///
-  /// Default using in-memory records version.
-  /// **You should setup your getter method!**
-  static int Function(String groupId, String id) getVersion = (groupId, id) {
-    return _inMemoryRecords['$groupId.$id'] ?? 0;
-  };
-
-  /// Set [version] of tip after user manually close it
+  /// You should extends [StateManager] for your own state
+  /// manager, eg: shared_preferences or Hive.
   ///
-  /// Default using in-memory records version.
-  /// You should setup your setter method!
-  static Future<void> Function(String groupId, String id, int version)
-      setVersion = (groupId, id, version) async {
-    _inMemoryRecords['$groupId.$id'] = version;
-  };
+  /// See details in https://pub.dev/packages/simple_tip
+  static StateManager stateManager = InMemoryStateManager();
 
   /// ID of this tip.
   ///
@@ -196,7 +193,8 @@ class _RadioGroup {
   }
 
   void retire(String id) async {
-    await OrderedTip.setVersion(groupId, id, candidates[id]!.version);
+    await OrderedTip.stateManager
+        .setVersion(groupId, id, candidates[id]!.version);
     // there is no tip enabled, now we can research
     Future.delayed(Duration(seconds: 0), () => reset());
   }
@@ -217,7 +215,8 @@ class _RadioGroup {
 
     leader = null;
     for (final candidate in sortedCandidates) {
-      if (OrderedTip.getVersion(groupId, candidate.id) != candidate.version) {
+      if (OrderedTip.stateManager.getVersion(groupId, candidate.id) !=
+          candidate.version) {
         leader = candidate.id;
         break;
       }

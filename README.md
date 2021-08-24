@@ -52,16 +52,14 @@ Widget build(context) {
 }
 ```
 
-> You must setup [`getVersion`](#static-method-of-orderedtip) and [`setVersion`](#static-method-of-orderedtip), otherwise it only works in-memory.
-> Which means when you restart your app, it'll show up again!
+> You must setup [`stateManager`](#state-manager), otherwise it only works in-memory.
+> Which means when you restart your app, tips will show up again!
 
 ## Configuration
 
 Two main widget you can use, `SimpleTip` and `OrderedTip`.
 
 ### SimpleTip
-
-> shown in order: `Property Name`, `Type`, `Default`
 
 - `title`, `String?`, `null`
   - The title to display in the tip.
@@ -70,7 +68,7 @@ Two main widget you can use, `SimpleTip` and `OrderedTip`.
   - This value will also use for semantics.
 - `contentBuilder`, `Widget Function(BuildContext, VoidCallback)?`, `null`
   - Builder for building tip's content.
-  - This will "win" when [message] and [contentBuilder] both set.
+  - This will "win" when `message` and `contentBuilder` both set.
   - Example:
 
 ```dart
@@ -146,7 +144,7 @@ final onClosed = () {
 
 ### OrderedTip
 
-> **IMPORTANT** you should set up static method `getVersion` and `setVersion` to make it remember that user had read this tip.
+> **IMPORTANT** you should set up static property `stateManager` to "remember" that user had read this tip.
 
 - `id`, `String`, **required**
   - ID of this tip.
@@ -179,18 +177,20 @@ tipList.sort((a, b) => a.order.compareTo(b.order))
 - `message`, `String?`, same as `SimpleTip.message`
 - `contentBuilder`, `Widget Function(BuildContext, VoidCallback)?`, same as `SimpleTip.contentBuilder`
 
-#### Static method of OrderedTip
+#### State Manager
+
+There are two method you need to override:
 
 - `getVersion`, `int Function(String groupId, String id)`, see below
-  - Get `version` of tip from your filesystem, eg: SharedPreferences, hive
+  - Get `OrderedTip.version` from your filesystem, eg: SharedPreferences, hive
   - Default using in-memory data to get version:
 
 ```dart
-(groupId, id) => _inMemoryRecords['$groupId.$id'] ?? 0;
+(groupId, id) => __inMemoryR_ecords['$groupId.$id'] ?? 0;
 ```
 
 - `setVersion`, `Future<void> Function(String groupId, String id, int version)`, see below
-  - Set `version` of tip after user manually close it
+  - Set `OrderedTip.version` after user manually close it
   - Default using in-memory data to record version:
 
 ```dart
@@ -201,19 +201,49 @@ Example of using [shared_preferences](https://pub.dev/packages/shared_preference
 
 ```dart
 void initialize() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  OrderedTip.getVersion = (groupId, id) => prefs.getInt('$groupId.$id') ?? 0;
-  OrderedTip.setVersion = (groupId, id, version) => prefs.setInt('$groupId.$id', version);
+  final service = await SharedPreferences.getInstance();
+  OrderedTip.stateManager = PrefStateManager(service);
+}
+
+class PrefStateManager extends StateManager {
+  final SharedPreferences pref;
+
+  const PrefStateManager(this.pref);
+
+  @override
+  int getVersion(String groupId, String id) {
+    return pref.getInt('$groupId.$id') ?? 0;
+  }
+
+  @override
+  Future<void> setVersion(String groupId, String id, int version) {
+    return pref.setInt('$groupId.$id', version);
+  }
 }
 ```
 
 Example of using [Hive](https://pub.dev/packages/hive)
 
 ```dart
-void initialize() {
+void initialize() async {
   final box = Hive.box('myBox');
-  OrderedTip.getVersion = (groupId, id) => box.get('$groupId.$id') ?? 0;
-  OrderedTip.setVersion = (groupId, id, version) => box.put('$groupId.$id', version);
+  OrderedTip.stateManager = HiveStateManager(box);
+}
+
+class HiveStateManager extends StateManager {
+  final Box box;
+
+  const HiveStateManager(this.box);
+
+  @override
+  int getVersion(String groupId, String id) {
+    return box.get('$groupId.$id') ?? 0;
+  }
+
+  @override
+  Future<void> setVersion(String groupId, String id, int version) async {
+    return box.put('$groupId.$id', version);
+  }
 }
 ```
 
