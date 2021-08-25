@@ -109,6 +109,19 @@ class OrderedTip extends StatefulWidget {
   OrderedTipState createState() => OrderedTipState();
 }
 
+class OrderedTipItem {
+  final String id;
+  final int order;
+  final int version;
+  late VoidCallback _builder;
+
+  OrderedTipItem({
+    required this.id,
+    required this.version,
+    required this.order,
+  });
+}
+
 class OrderedTipState extends State<OrderedTip> {
   _RadioGroup get group => widget.group;
 
@@ -146,9 +159,9 @@ class OrderedTipState extends State<OrderedTip> {
 class _RadioGroup {
   String? leader;
 
-  List<_RadioGroupCandidate> sortedCandidates = <_RadioGroupCandidate>[];
+  List<OrderedTipItem> sortedCandidates = <OrderedTipItem>[];
 
-  final candidates = <String, _RadioGroupCandidate>{};
+  final candidates = <String, OrderedTipItem>{};
 
   final String groupId;
 
@@ -162,7 +175,7 @@ class _RadioGroup {
     required int order,
   }) {
     if (candidates[id] == null) {
-      candidates[id] = _RadioGroupCandidate(
+      candidates[id] = OrderedTipItem(
         id: id,
         order: order,
         version: version,
@@ -186,17 +199,15 @@ class _RadioGroup {
     final oldLeader = leader;
     startElection();
     if (oldLeader != leader) {
-      candidates.values.forEach((candidate) {
-        candidate.builder();
-      });
+      candidates[oldLeader]?._builder();
+      candidates[leader]?._builder();
     }
   }
 
   void retire(String id) async {
-    await OrderedTip.stateManager
-        .setVersion(groupId, id, candidates[id]!.version);
+    await OrderedTip.stateManager.tipRead(groupId, candidates[id]!);
     // there is no tip enabled, now we can research
-    Future.delayed(Duration(seconds: 0), () => reset());
+    reset();
   }
 
   void setup() {
@@ -206,7 +217,7 @@ class _RadioGroup {
 
   void setupBuilder(String id, VoidCallback builder) {
     if (candidates[id] != null) {
-      candidates[id]!.builder = builder;
+      candidates[id]!._builder = builder;
     }
   }
 
@@ -215,24 +226,10 @@ class _RadioGroup {
 
     leader = null;
     for (final candidate in sortedCandidates) {
-      if (OrderedTip.stateManager.getVersion(groupId, candidate.id) !=
-          candidate.version) {
+      if (OrderedTip.stateManager.shouldShow(groupId, candidate)) {
         leader = candidate.id;
         break;
       }
     }
   }
-}
-
-class _RadioGroupCandidate {
-  final String id;
-  final int order;
-  final int version;
-  late VoidCallback builder;
-
-  _RadioGroupCandidate({
-    required this.id,
-    required this.version,
-    required this.order,
-  });
 }

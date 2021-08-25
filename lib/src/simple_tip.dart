@@ -224,9 +224,6 @@ class SimpleTipState extends State<SimpleTip>
 
   void hideEntry() {
     _controller.reverse();
-    if (widget.onClosed != null) {
-      widget.onClosed!();
-    }
   }
 
   @override
@@ -310,6 +307,9 @@ class SimpleTipState extends State<SimpleTip>
   void _handleStatusChanged(AnimationStatus status) {
     if (status == AnimationStatus.dismissed) {
       _removeEntry();
+      if (widget.onClosed != null) {
+        widget.onClosed!();
+      }
     }
   }
 

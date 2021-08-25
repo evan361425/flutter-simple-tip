@@ -40,16 +40,16 @@ void main() {
         ),
       ),
     ));
-    await tester.pump(const Duration(milliseconds: 10));
+    await tester.pumpAndSettle();
 
     expect(find.text('Tip1'), findsOneWidget);
     expect(find.text('Tip3'), findsOneWidget);
     expect(find.text('Tip2'), findsNothing);
 
     await tester.tapAt(Offset.zero);
-    // wait for close
+    // close animation
     await tester.pumpAndSettle();
-    // wait for open
+    // open animation
     await tester.pumpAndSettle();
 
     expect(find.text('Tip1'), findsNothing);
@@ -57,6 +57,7 @@ void main() {
     expect(find.text('Tip2'), findsOneWidget);
 
     await tester.tapAt(Offset.zero);
+    await tester.pumpAndSettle();
     await tester.pumpAndSettle();
 
     expect(find.text('Tip1'), findsNothing);

@@ -1,15 +1,17 @@
+import '../ordered_tip.dart';
 import 'state_manager.dart';
 
 class InMemoryStateManager extends StateManager {
   final _records = <String, int>{};
 
   @override
-  int getVersion(String groupId, String id) {
-    return _records['$groupId.$id'] ?? 0;
+  bool shouldShow(String groupId, OrderedTipItem item) {
+    final lastVersion = _records['$groupId.${item.id}'];
+    return lastVersion == null ? true : lastVersion < item.version;
   }
 
   @override
-  Future<void> setVersion(String groupId, String id, int version) async {
-    _records['$groupId.$id'] = version;
+  Future<void> tipRead(String groupId, OrderedTipItem item) async {
+    _records['$groupId.${item.id}'] = item.version;
   }
 }
