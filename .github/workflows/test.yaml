@@ -9,6 +9,7 @@ on:
     paths-ignore:
       - "**.md"
       - ".github/**"
+      - pubspec.yaml
   pull_request:
 
   # Allows you to run this workflow manually from the Actions tab
