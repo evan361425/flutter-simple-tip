@@ -1,2 +1,1 @@
-- `StateManager` using `shouldShow` and `tipRead`
-- Fix bugs
+- Fix pubspec repository link
