@@ -1,5 +1,5 @@
 name: simple_tip
-version: 0.1.0
+version: 0.2.0
 description: >-
   A widget for showing tips to it's child that automatically setup position
 repository: https://github.com/dart-lang/shelf
