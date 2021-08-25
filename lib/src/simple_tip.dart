@@ -183,6 +183,7 @@ class SimpleTip extends StatefulWidget {
   SimpleTipState createState() => SimpleTipState();
 }
 
+/// State o [SimpleTip]
 class SimpleTipState extends State<SimpleTip>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
@@ -222,6 +223,9 @@ class SimpleTipState extends State<SimpleTip>
     super.dispose();
   }
 
+  /// Gracefully closing tip
+  ///
+  /// It will trigger [AnimationController.reverse]
   void hideEntry() {
     _controller.reverse();
   }

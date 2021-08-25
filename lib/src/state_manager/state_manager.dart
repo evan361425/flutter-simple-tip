@@ -1,5 +1,8 @@
 import '../ordered_tip.dart';
 
+/// Manage state for [OrderedTip]
+///
+/// It helps your APP remember wheather user had read the tip.
 abstract class StateManager {
   /// Get [OrderedTip.version] from your filesystem, eg: SharedPreferences, hive
   ///

@@ -5,6 +5,25 @@ import 'state_manager/in_memory_state_manager.dart';
 import 'state_manager/state_manager.dart';
 import 'tip_content.dart';
 
+/// Tips show in order.
+///
+/// Make [SimpleTip] more flexable.
+///
+/// Example:
+/// ```
+/// Widget build(context) {
+///   return OrderedTip(
+///     groupId: 'group1',
+///     id: 'id1',
+///     order: 1,
+///     message: 'Tip for profile',
+///     child: TextButton(
+///       onPressed: navigateToProfile,
+///       child: Text('Profile'),
+///     ),
+///   );
+/// }
+/// ```
 class OrderedTip extends StatefulWidget {
   /// Groups of all ordered tip.
   ///
@@ -76,6 +95,57 @@ class OrderedTip extends StatefulWidget {
   /// Default set to `0`.
   final int order;
 
+  /// Tip's content constraints
+  ///
+  /// More detail on [SimpleTip.boxConstraints]
+  final BoxConstraints? boxConstraints;
+
+  /// Tip's container decoration
+  ///
+  /// More detail on [SimpleTip.decoration]
+  final Decoration? decoration;
+
+  /// Tip's text default style
+  ///
+  /// More detail on [SimpleTip.textStyle]
+  final TextStyle? textStyle;
+
+  /// The amount of space by which to inset the tip's content.
+  ///
+  /// More detail on [SimpleTip.padding]
+  final EdgeInsets padding;
+
+  /// The empty space that surrounds the tip.
+  ///
+  /// More detail on [SimpleTip.margin]
+  final EdgeInsets margin;
+
+  /// The vertical gap between the widget and the displayed tip.
+  ///
+  /// More detail on [SimpleTip.verticalOffset]
+  final double verticalOffset;
+
+  /// Text of button to close tip.
+  ///
+  /// More detail on [SimpleTip.closerText]
+  final String closerText;
+
+  /// The length of time that a tip will wait for showing.
+  ///
+  /// More detail on [SimpleTip.waitDuration]
+  final Duration waitDuration;
+
+  /// Whether the tip's [message] should be excluded from the semantics
+  /// tree.
+  ///
+  /// More detail on [SimpleTip.excludeFromSemantics]
+  final bool excludeFromSemantics;
+
+  /// Whether the tips defaults to being displayed below the widget.
+  ///
+  /// More detail on [SimpleTip.preferBelow]
+  final bool preferBelow;
+
   /// The widget below this widget in the tree.
   ///
   /// {@macro flutter.widgets.ProxyWidget.child}
@@ -89,8 +159,18 @@ class OrderedTip extends StatefulWidget {
     this.message,
     this.contentBuilder,
     this.version = 0,
-    required this.child,
     this.order = 0,
+    this.boxConstraints,
+    this.decoration,
+    this.textStyle,
+    this.padding = const EdgeInsets.all(8.0),
+    this.margin = const EdgeInsets.symmetric(horizontal: 16.0),
+    this.verticalOffset = 24.0,
+    this.closerText = 'OK',
+    this.waitDuration = Duration.zero,
+    this.excludeFromSemantics = false,
+    this.preferBelow = true,
+    required this.child,
   }) : super(key: key) {
     group.addCandidate(id: id, version: version, order: order);
   }
@@ -106,13 +186,23 @@ class OrderedTip extends StatefulWidget {
   }
 
   @override
-  OrderedTipState createState() => OrderedTipState();
+  _OrderedTipState createState() => _OrderedTipState();
 }
 
+/// Item pass to [StateManager]
 class OrderedTipItem {
+  /// ID for each tip.
   final String id;
+
+  /// Showing order.
   final int order;
+
+  /// Version of this tip.
+  ///
+  /// It is useful when you need to controll different user using different
+  /// tip.
   final int version;
+
   late VoidCallback _builder;
 
   OrderedTipItem({
@@ -122,7 +212,7 @@ class OrderedTipItem {
   });
 }
 
-class OrderedTipState extends State<OrderedTip> {
+class _OrderedTipState extends State<OrderedTip> {
   _RadioGroup get group => widget.group;
 
   bool get isDisabled => widget.group.isNotLeader(widget.id);
@@ -132,6 +222,17 @@ class OrderedTipState extends State<OrderedTip> {
     return SimpleTip(
       title: widget.title,
       message: widget.message,
+      contentBuilder: widget.contentBuilder,
+      boxConstraints: widget.boxConstraints,
+      decoration: widget.decoration,
+      textStyle: widget.textStyle,
+      padding: widget.padding,
+      margin: widget.margin,
+      verticalOffset: widget.verticalOffset,
+      closerText: widget.closerText,
+      waitDuration: widget.waitDuration,
+      excludeFromSemantics: widget.excludeFromSemantics,
+      preferBelow: widget.preferBelow,
       isDisabled: isDisabled,
       onClosed: () => widget.group.retire(widget.id),
       child: widget.child,

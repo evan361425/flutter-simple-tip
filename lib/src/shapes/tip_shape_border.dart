@@ -1,17 +1,28 @@
 import 'package:flutter/material.dart';
 
+/// Shape has a pointer for target widget(position)
 class TipShapeBorder extends ShapeBorder {
+  /// Width of arrow
+  ///
+  /// Default: `20.0`
   final double arrowWidth;
 
+  /// Height of arrow
+  ///
+  /// Default: `10.0`
   final double arrowHeight;
 
   /// Arc of arrow
   ///
   /// Should between `1` and `0`
+  ///
+  /// Default: `4.0`
   final double arrowArc;
 
+  /// Radius of arrow
   final double radius;
 
+  /// The position of target
   final Offset target;
 
   TipShapeBorder({

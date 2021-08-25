@@ -16,7 +16,7 @@ A widget for showing tips to it's child that automatically setup position.
 
 ### All in one screen
 
-Wrap your widget with `SimpleTip`, and give some tips!
+Wrap your widget with [`SimpleTip`](#simpletip), and give some tips!
 
 ```dart
 Widget build(context) {
@@ -29,7 +29,7 @@ Widget build(context) {
 
 ### In order
 
-Give same `groupId` for each tips should be shown in order.
+Wrap your widget with [`OrderedTip`](#orderedtip) and give `groupId` and `id` for each tip.
 
 ```dart
 Widget build(context) {
@@ -57,7 +57,9 @@ Widget build(context) {
 
 ## Configuration
 
-Two main widget you can use, `SimpleTip` and `OrderedTip`.
+Two main widget you can use, [`SimpleTip`](#simpletip) and [`OrderedTip`](#orderedtip).
+
+> You can follow Dart provided [API document](https://pub.dev/documentation/simple_tip/latest/simple_tip/simple_tip-library.html)
 
 ### SimpleTip
 
@@ -207,20 +209,25 @@ tipList.sort((a, b) => a.order.compareTo(b.order))
 
 There are two method you need to override:
 
-- `getVersion`, `int Function(String groupId, String id)`, see below
+- `shouldShow`, `int Function(String groupId, OrderedTipItem item)`, see below
   - Get `OrderedTip.version` from your filesystem, eg: SharedPreferences, hive
   - Default using in-memory data to get version:
 
 ```dart
-(groupId, id) => __inMemoryR_ecords['$groupId.$id'] ?? 0;
+bool shouldShow(String groupId, OrderedTipItem item) {
+  final lastVersion = _records['$groupId.${item.id}'];
+  return lastVersion == null ? true : lastVersion < item.version;
+}
 ```
 
-- `setVersion`, `Future<void> Function(String groupId, String id, int version)`, see below
+- `tipRead`, `Future<void> Function(String groupId, OrderedTipItem item)`, see below
   - Set `OrderedTip.version` after user manually close it
   - Default using in-memory data to record version:
 
 ```dart
-(groupId, id, version) async => _inMemoryRecords['$groupId.$id'] = version
+Future<void> tipRead(String groupId, OrderedTipItem item) async {
+  _records['$groupId.${item.id}'] = item.version;
+}
 ```
 
 Example of using [shared_preferences](https://pub.dev/packages/shared_preferences):
@@ -237,13 +244,14 @@ class PrefStateManager extends StateManager {
   const PrefStateManager(this.pref);
 
   @override
-  int getVersion(String groupId, String id) {
-    return pref.getInt('$groupId.$id') ?? 0;
+  bool shouldShow(String groupId, OrderedTipItem item) {
+    final lastVersion = pref.getInt('$groupId.${item.id}');
+    return lastVersion == null ? true : lastVersion < item.version;
   }
 
   @override
-  Future<void> setVersion(String groupId, String id, int version) {
-    return pref.setInt('$groupId.$id', version);
+  Future<void> tipRead(String groupId, OrderedTipItem item) {
+    return pref.setInt('$groupId.${item.id}', item.version);
   }
 }
 ```
@@ -262,13 +270,14 @@ class HiveStateManager extends StateManager {
   const HiveStateManager(this.box);
 
   @override
-  int getVersion(String groupId, String id) {
-    return box.get('$groupId.$id') ?? 0;
+  bool shouldShow(String groupId, OrderedTipItem item) {
+    final lastVersion = box.get('$groupId.${item.id}');
+    return lastVersion == null ? true : lastVersion < item.version;
   }
 
   @override
-  Future<void> setVersion(String groupId, String id, int version) async {
-    return box.put('$groupId.$id', version);
+  Future<void> tipRead(String groupId, OrderedTipItem item) {
+    return box.put('$groupId.${item.id}', version);
   }
 }
 ```
