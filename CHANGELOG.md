@@ -1,6 +1,10 @@
+## v0.2.1 2021-08-25
+
+- Fix pubspec repository link
+
 ## v0.2.0 2021-08-25
 
-- `StateManager` using `shouldShow` and `tipRead`
+-  using  and 
 - Fix bugs
 
 ## v0.1.0 2021-08-24
