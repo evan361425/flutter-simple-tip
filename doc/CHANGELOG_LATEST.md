@@ -1,1 +1,2 @@
-- Use `StateManager` instead of static methods
+- `StateManager` using `shouldShow` and `tipRead`
+- Fix bugs
