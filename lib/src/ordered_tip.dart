@@ -325,7 +325,11 @@ class _RadioGroup {
   void startElection() {
     if (isNotReady) setup();
 
-    leader = null;
+    if (leader != null) {
+      final oldLeader = leader;
+      leader = null;
+      candidates[oldLeader]?._builder();
+    }
     for (final candidate in sortedCandidates) {
       if (OrderedTip.stateManager.shouldShow(groupId, candidate)) {
         leader = candidate.id;
