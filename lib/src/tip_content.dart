@@ -77,7 +77,7 @@ class TipContent extends StatelessWidget {
                   padding: const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
                   margin: const EdgeInsets.only(top: 8.0),
                   decoration: BoxDecoration(
-                    color: theme.buttonColor,
+                    color: theme.buttonTheme.colorScheme!.onPrimary,
                     borderRadius: BorderRadius.circular(4.0),
                   ),
                   child: Text(
