@@ -29,22 +29,15 @@ class SimpleTip extends StatefulWidget {
   /// This value will also use for semantics.
   final String? message;
 
-  /// Builder for building tip's content
+  /// Content of tip
   ///
-  /// This will "win" when [message] and [contentBuilder] both set.
+  /// This will "win" when [message] and [content] both set.
   ///
   /// Example:
   /// ```
-  /// final contentBuilder = (BuilderContext context, VoidCallback closer) {
-  ///   return Material(
-  ///     child: TextButton(
-  ///       onPressed: closer,
-  ///       child: Text('tap to close tip'),
-  ///     ),
-  ///   );
-  /// };
+  /// final content = Text('hi');
   /// ```
-  final ContentBuilder? contentBuilder;
+  final Widget? content;
 
   /// Tip's content constraints
   ///
@@ -52,7 +45,7 @@ class SimpleTip extends StatefulWidget {
   /// ```
   /// BoxConstraints(minHeight: 24.0)
   /// ```
-  final BoxConstraints? boxConstraints;
+  final BoxConstraints boxConstraints;
 
   /// Tip's container decoration
   ///
@@ -69,11 +62,9 @@ class SimpleTip extends StatefulWidget {
   ///
   /// Default:
   /// ```
-  /// theme.textTheme.bodyText1!.copyWith(
-  ///   color: isDark ? Colors.black : Colors.white,
-  /// )
+  /// TextStyle()
   /// ```
-  final TextStyle? textStyle;
+  final TextStyle textStyle;
 
   /// A callback after the start of closing tip.
   ///
@@ -162,10 +153,10 @@ class SimpleTip extends StatefulWidget {
     Key? key,
     this.title,
     this.message,
-    this.contentBuilder,
-    this.boxConstraints,
+    this.content,
+    this.boxConstraints = const BoxConstraints(minHeight: 24.0),
     this.decoration,
-    this.textStyle,
+    this.textStyle = const TextStyle(),
     this.onClosed,
     this.padding = const EdgeInsets.all(8.0),
     this.margin = const EdgeInsets.symmetric(horizontal: 16.0),
@@ -176,7 +167,7 @@ class SimpleTip extends StatefulWidget {
     this.isDisabled = false,
     this.preferBelow = true,
     required this.child,
-  })  : assert(message != null || contentBuilder != null),
+  })  : assert(message != null || content != null),
         super(key: key);
 
   @override
@@ -289,7 +280,7 @@ class SimpleTipState extends State<SimpleTip>
         preferBelow: widget.preferBelow,
         boxConstraints: widget.boxConstraints,
         closerText: widget.closerText,
-        contentBuilder: widget.contentBuilder,
+        content: widget.content,
         decoration: widget.decoration,
         textStyle: widget.textStyle,
         margin: widget.margin,

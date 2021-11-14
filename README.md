@@ -69,23 +69,16 @@ Two main widget you can use, [`SimpleTip`](#simpletip) and [`OrderedTip`](#order
 
 - `message`, `String?`, `null`
 
-  - The message to display in the tip. **MUST** set if `contentBuilder` not set.
+  - The message to display in the tip. **MUST** set if `content` not set.
   - This value will also use for semantics.
 
-- `contentBuilder`, `Widget Function(BuildContext, VoidCallback)?`, `null`
-  - Builder for building tip's content.
-  - This will "win" when `message` and `contentBuilder` both set.
+- `content`, `Widget?`, `null`
+  - Content of the tip.
+  - This will "win" when `message` and `content` both set.
   - Example:
 
 ```dart
-final contentBuilder = (BuilderContext context, VoidCallback closer) {
-  return Material(
-    child: TextButton(
-      onPressed: closer,
-      child: Text('tap to close tip'),
-    ),
-  );
-};
+final content = Text('hi');
 ```
 
 - `boxConstraints`, `BoxConstraints?`, `BoxConstraints(minHeight: 24.0)`
@@ -203,7 +196,7 @@ tipList.sort((a, b) => a.order.compareTo(b.order))
 
 - `title`, `String?`, same as `SimpleTip.title`
 - `message`, `String?`, same as `SimpleTip.message`
-- `contentBuilder`, `Widget Function(BuildContext, VoidCallback)?`, same as `SimpleTip.contentBuilder`
+- `content`, `Widget?`, same as `SimpleTip.content`
 
 #### State Manager
 

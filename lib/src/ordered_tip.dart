@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'simple_tip.dart';
 import 'state_manager/in_memory_state_manager.dart';
 import 'state_manager/state_manager.dart';
-import 'tip_content.dart';
 
 /// Tips show in order.
 ///
@@ -64,10 +63,10 @@ class OrderedTip extends StatefulWidget {
   /// See details in [SimpleTip.message]
   final String? message;
 
-  /// Content builder for [SimpleTip]
+  /// Content of [SimpleTip]
   ///
   /// See details in [SimpleTip.contentBuilder]
-  final ContentBuilder? contentBuilder;
+  final Widget? content;
 
   /// The version it should be.
   ///
@@ -98,7 +97,7 @@ class OrderedTip extends StatefulWidget {
   /// Tip's content constraints
   ///
   /// More detail on [SimpleTip.boxConstraints]
-  final BoxConstraints? boxConstraints;
+  final BoxConstraints boxConstraints;
 
   /// Tip's container decoration
   ///
@@ -108,7 +107,7 @@ class OrderedTip extends StatefulWidget {
   /// Tip's text default style
   ///
   /// More detail on [SimpleTip.textStyle]
-  final TextStyle? textStyle;
+  final TextStyle textStyle;
 
   /// The amount of space by which to inset the tip's content.
   ///
@@ -157,12 +156,12 @@ class OrderedTip extends StatefulWidget {
     required this.groupId,
     this.title,
     this.message,
-    this.contentBuilder,
+    this.content,
     this.version = 0,
     this.order = 0,
-    this.boxConstraints,
+    this.boxConstraints = const BoxConstraints(minHeight: 24.0),
     this.decoration,
-    this.textStyle,
+    this.textStyle = const TextStyle(),
     this.padding = const EdgeInsets.all(8.0),
     this.margin = const EdgeInsets.symmetric(horizontal: 16.0),
     this.verticalOffset = 24.0,
@@ -222,7 +221,7 @@ class _OrderedTipState extends State<OrderedTip> {
     return SimpleTip(
       title: widget.title,
       message: widget.message,
-      contentBuilder: widget.contentBuilder,
+      content: widget.content,
       boxConstraints: widget.boxConstraints,
       decoration: widget.decoration,
       textStyle: widget.textStyle,
