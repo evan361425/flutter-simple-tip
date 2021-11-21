@@ -1,100 +1,201 @@
 import 'package:flutter/material.dart';
 import 'package:simple_tip/simple_tip.dart';
 
+final observer = RouteObserver<ModalRoute<void>>();
+
 void main() {
-  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: TipScreen()));
+  runApp(MaterialApp(
+    debugShowCheckedModeBanner: false,
+    navigatorObservers: [observer],
+    home: const StartPage(),
+  ));
 }
 
-class TipScreen extends StatelessWidget {
+class StartPage extends StatelessWidget {
+  const StartPage({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      body: Center(
+        child: ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).push(MaterialPageRoute(
+              builder: (_) => Page1(
+                grouper: GlobalKey<TipGrouperState>(),
+                observer: observer,
+              ),
+            ));
+          },
+          child: const Text('start'),
+        ),
+      ),
+    );
+  }
+}
+
+class Page1 extends StatelessWidget {
+  final GlobalKey<TipGrouperState> grouper;
+
+  final RouteObserver<ModalRoute<void>> observer;
+
+  const Page1({
+    Key? key,
+    required this.grouper,
+    required this.observer,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return TipGrouper(
+      key: grouper,
+      id: 'group',
+      candidateLenght: 3,
+      routeObserver: observer,
+      child: Scaffold(
+        appBar: AppBar(
+          leading: IconButton(
+            onPressed: () => Navigator.of(context).pop(),
+            icon: const Text('pop'),
+          ),
+          actions: [
+            IconButton(
+              onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+                builder: (context) => const Page2(),
+              )),
+              icon: const Text('next'),
+            ),
+          ],
+        ),
+        body: SafeArea(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              OrderedTip(
+                order: 1,
+                version: 1,
+                id: 't-1',
+                grouper: grouper,
+                child: const Card(child: ListTile(title: Text('Tip 1'))),
+              ),
+              OrderedTip(
+                order: 2,
+                version: 1,
+                id: 't-2',
+                grouper: grouper,
+                child: const Card(child: ListTile(title: Text('Tip 2'))),
+              ),
+              OrderedTip(
+                order: 3,
+                version: 1,
+                id: 't-3',
+                grouper: grouper,
+                child: const Card(child: ListTile(title: Text('Tip 3'))),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class Page2 extends StatelessWidget {
+  const Page2({Key? key}) : super(key: key);
+
+  static bool isDisable = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Text('pop'),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.of(context).push(MaterialPageRoute(
+              builder: (context) => const Page3(),
+            )),
+            icon: const Text('next'),
+          ),
+        ],
+      ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Row(children: [
-            SimpleTip(
-              title: 'example title',
-              message: 'This tip will show bellow left',
-              child: BlockOfText('Top Left Widget', Colors.amber),
+          Center(
+            child: SimpleTip(
+              message: 'Simple tip',
+              onClosed: () => isDisable = true,
+              isDisabled: isDisable,
+              child: const Card(
+                child: ListTile(
+                  title: Text('Tip 1'),
+                ),
+              ),
             ),
-            Spacer(),
-            SimpleTip(
-              message: 'This tip will show bellow right',
-              child: BlockOfText('Top Right Widget', Colors.indigo),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class Page3 extends StatelessWidget {
+  static bool isDisable = false;
+
+  const Page3({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Text('pop'),
+        ),
+      ),
+      body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SimpleTip(
+            message: 'Simple tip 1',
+            onClosed: () => isDisable = true,
+            isDisabled: isDisable,
+            withBackdrop: true,
+            child: const Card(
+              child: ListTile(
+                title: Text('Tip 1'),
+              ),
             ),
-          ]),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context)
-                .push(MaterialPageRoute(builder: (_) => TipOrderedScreen())),
-            child: Text('Try Ordered Tips'),
           ),
           SimpleTip(
-            message: 'This tip will show above',
-            child: BlockOfText('Bottom Widget', Colors.cyan),
+            message: 'Simple tip 2',
+            onClosed: () => isDisable = true,
+            isDisabled: isDisable,
+            withBackdrop: true,
+            child: const Card(
+              child: ListTile(
+                title: Text('Tip 2'),
+              ),
+            ),
+          ),
+          SimpleTip(
+            message: 'Simple tip 3',
+            onClosed: () => isDisable = true,
+            isDisabled: isDisable,
+            withBackdrop: true,
+            child: const Card(
+              child: ListTile(
+                title: Text('Tip 3'),
+              ),
+            ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class TipOrderedScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(children: [
-            OrderedTip(
-              groupId: 'group1',
-              id: 'tip1',
-              order: 1,
-              version: 1,
-              message: 'First very long long long long long tip',
-              child: BlockOfText('Top Left Widget', Colors.amber),
-            ),
-            Spacer(),
-            OrderedTip(
-              groupId: 'group1',
-              id: 'tip3',
-              order: 3,
-              version: 1,
-              message: 'Third tip',
-              child: BlockOfText('Top Right Widget', Colors.indigo),
-            ),
-          ]),
-          OrderedTip(
-            groupId: 'group1',
-            id: 'tip2',
-            order: 2,
-            version: 1,
-            message: 'Second tip',
-            child: BlockOfText('Bottom Widget', Colors.cyan),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-class BlockOfText extends StatelessWidget {
-  final String text;
-
-  final Color color;
-
-  const BlockOfText(this.text, this.color);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: color,
-      margin: const EdgeInsets.all(4.0),
-      padding: const EdgeInsets.all(8.0),
-      child: Text(text, textAlign: TextAlign.center),
     );
   }
 }

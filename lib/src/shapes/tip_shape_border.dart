@@ -25,7 +25,7 @@ class TipShapeBorder extends ShapeBorder {
   /// The position of target
   final Offset target;
 
-  TipShapeBorder({
+  const TipShapeBorder({
     required this.target,
     this.radius = 4.0,
     this.arrowWidth = 20.0,

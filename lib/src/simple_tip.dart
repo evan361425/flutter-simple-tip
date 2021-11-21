@@ -77,7 +77,7 @@ class SimpleTip extends StatefulWidget {
   ///   instance.write('mytip', 1);
   /// }
   /// ```
-  final VoidCallback? onClosed;
+  final VoidCallback onClosed;
 
   /// The amount of space by which to inset the tip's content.
   ///
@@ -119,7 +119,7 @@ class SimpleTip extends StatefulWidget {
 
   /// The length of time that a tip will wait for showing.
   ///
-  /// Defaults to 0 milliseconds (tips are shown immediately after created).
+  /// Defaults to 300 milliseconds (same as PageRoute default `transitionDuration`).
   final Duration waitDuration;
 
   /// Whether the tip's [message] should be excluded from the semantics
@@ -144,6 +144,11 @@ class SimpleTip extends StatefulWidget {
   /// direction.
   final bool preferBelow;
 
+  /// Whether use backdrop
+  ///
+  /// Default: `false`
+  final bool withBackdrop;
+
   /// The widget below this widget in the tree.
   ///
   /// {@macro flutter.widgets.ProxyWidget.child}
@@ -157,15 +162,16 @@ class SimpleTip extends StatefulWidget {
     this.boxConstraints = const BoxConstraints(minHeight: 24.0),
     this.decoration,
     this.textStyle = const TextStyle(),
-    this.onClosed,
+    required this.onClosed,
     this.padding = const EdgeInsets.all(8.0),
     this.margin = const EdgeInsets.symmetric(horizontal: 16.0),
     this.verticalOffset = 24.0,
     this.closerText = 'OK',
-    this.waitDuration = Duration.zero,
+    this.waitDuration = const Duration(milliseconds: 300),
     this.excludeFromSemantics = false,
     this.isDisabled = false,
     this.preferBelow = true,
+    this.withBackdrop = false,
     required this.child,
   })  : assert(message != null || content != null),
         super(key: key);
@@ -178,6 +184,8 @@ class SimpleTip extends StatefulWidget {
 class SimpleTipState extends State<SimpleTip>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
+  // save in state avoid missing widget when removing tips
+  late bool _withBackdrop;
   OverlayEntry? _entry;
   Timer? _showTimer;
 
@@ -189,6 +197,7 @@ class SimpleTipState extends State<SimpleTip>
   @override
   Widget build(BuildContext context) {
     if (widget.isDisabled) {
+      _removeEntry();
       return widget.child;
     }
     assert(Overlay.of(context, debugRequiredFor: widget) != null);
@@ -224,9 +233,10 @@ class SimpleTipState extends State<SimpleTip>
   @override
   void initState() {
     super.initState();
+    _withBackdrop = widget.withBackdrop;
     _controller = AnimationController(
-      duration: Duration(milliseconds: 150),
-      reverseDuration: Duration(milliseconds: 75),
+      duration: const Duration(milliseconds: 150),
+      reverseDuration: const Duration(milliseconds: 75),
       vsync: this,
     )..addStatusListener(_handleStatusChanged);
   }
@@ -249,26 +259,30 @@ class SimpleTipState extends State<SimpleTip>
     );
 
     // insert backdrop first
-    // We create this widget outside of the overlay entry's builder to prevent
-    // updated values from happening to leak into the overlay when the overlay
-    // rebuilds.
-    if (!_backdropIsBuilt) {
-      final Widget backdropOverlay = SizedBox.expand(
-        child: GestureDetector(onTap: () {
-          // avoid ConcurrentModificationError: changing iteration during iterate
-          _workingTips++;
-          _backdropCb.forEach((cb) => cb());
-          _removeBackdrop();
-        }),
-      );
-      _backdrop = OverlayEntry(builder: (_) => backdropOverlay);
-      overlayState.insert(_backdrop!);
-      _backdropIsBuilt = true;
-      _backdropCb.add(hideEntry);
-      _workingTips = 1;
-    } else {
-      _backdropCb.add(hideEntry);
-      _workingTips++;
+    if (_withBackdrop) {
+      if (!_backdropIsBuilt) {
+        // We create this widget outside of the overlay entry's builder to prevent
+        // updated values from happening to leak into the overlay when the overlay
+        // rebuilds.
+        final Widget backdropOverlay = SizedBox.expand(
+          child: GestureDetector(onTap: () {
+            // avoid ConcurrentModificationError: changing iteration during iterate
+            _workingTips++;
+            for (var cb in _backdropCb) {
+              cb();
+            }
+            _removeBackdrop();
+          }),
+        );
+        _backdrop = OverlayEntry(builder: (_) => backdropOverlay);
+        overlayState.insert(_backdrop!);
+        _backdropIsBuilt = true;
+        _backdropCb.add(hideEntry);
+        _workingTips = 1;
+      } else {
+        _backdropCb.add(hideEntry);
+        _workingTips++;
+      }
     }
 
     final Widget overlay = Directionality(
@@ -302,9 +316,7 @@ class SimpleTipState extends State<SimpleTip>
   void _handleStatusChanged(AnimationStatus status) {
     if (status == AnimationStatus.dismissed) {
       _removeEntry();
-      if (widget.onClosed != null) {
-        widget.onClosed!();
-      }
+      widget.onClosed();
     }
   }
 
@@ -314,7 +326,7 @@ class SimpleTipState extends State<SimpleTip>
       _showTimer = null;
       _entry!.remove();
       _entry = null;
-      if (--_workingTips == 0) {
+      if (_withBackdrop && --_workingTips == 0) {
         _removeBackdrop();
       }
     }
