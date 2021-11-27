@@ -1,7 +1,3 @@
-## v0.3.1 2021-11-27
-
-- Allow disabled tips in grouper
-
 ## v0.3.0 2021-11-27
 
 - Add TipGrouper

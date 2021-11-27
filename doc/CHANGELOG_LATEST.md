@@ -1,1 +1,2 @@
 - Allow disabled tips in grouper
+- Allow null grouper
