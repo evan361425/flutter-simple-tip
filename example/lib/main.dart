@@ -53,6 +53,7 @@ class Page1 extends StatelessWidget {
       id: 'group',
       candidateLength: 3,
       routeObserver: observer,
+      disabledTips: const ['t-3'],
       child: Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -100,7 +101,7 @@ class Page1 extends StatelessWidget {
                 message: 'Tip content 3',
                 grouper: grouper,
                 child: const Card(
-                  child: ListTile(title: Text('Ordered tip 3')),
+                  child: ListTile(title: Text('Disabled tip')),
                 ),
               ),
             ],

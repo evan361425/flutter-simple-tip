@@ -28,12 +28,18 @@ class TipGrouper extends StatefulWidget {
   /// This will help start election when all candidates built.
   final int candidateLength;
 
+  /// Disable tips
+  ///
+  /// List of tips you don'y want to show
+  final List<String> disabledTips;
+
   TipGrouper({
     Key? key,
     required this.id,
     required this.candidateLength,
     StateManager? stateManager,
     this.routeObserver,
+    this.disabledTips = const [],
     required this.child,
   })  : stateManager = stateManager ?? defaultStateManager,
         super(key: key);
@@ -113,8 +119,9 @@ class TipGrouperState extends State<TipGrouper> with RouteAware {
     try {
       final items = candidates.values.toList()
         ..sort((a, b) => a.order.compareTo(b.order));
-      return items.firstWhere(
-          (item) => widget.stateManager.shouldShow(widget.id, item));
+      return items.firstWhere((item) =>
+          !widget.disabledTips.contains(item.id) &&
+          widget.stateManager.shouldShow(widget.id, item));
     } on StateError {
       return null;
     }

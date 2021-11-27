@@ -88,12 +88,6 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('Tip content 2'), findsNothing);
-    expect(find.text('Tip content 3'), findsOneWidget);
-
-    await tester.tap(find.text('OK'));
-    await tester.pumpAndSettle();
-    await tester.pump(const Duration(milliseconds: 300));
-
     expect(find.text('Tip content 3'), findsNothing);
   });
 }
