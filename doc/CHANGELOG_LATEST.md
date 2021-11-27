@@ -1,1 +1,1 @@
-- Add TipGrouper
+- Allow disabled tips in grouper
