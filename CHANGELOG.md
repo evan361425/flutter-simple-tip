@@ -1,10 +1,6 @@
 ## v0.3.0 2021-11-27
 
-- Fix pubspec repository link
-
-## v0.3.0 2021-11-27
-
-- Fix pubspec repository link
+- Add TipGrouper
 
 ## v0.2.1 2021-08-25
 
