@@ -1,18 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:simple_tip/simple_tip.dart';
 
-final observer = RouteObserver<ModalRoute<void>>();
-
 void main() {
+  final observer = RouteObserver<ModalRoute<void>>();
+
   runApp(MaterialApp(
     debugShowCheckedModeBanner: false,
     navigatorObservers: [observer],
-    home: const StartPage(),
+    home: StartPage(observer: observer),
   ));
 }
 
 class StartPage extends StatelessWidget {
-  const StartPage({Key? key}) : super(key: key);
+  final RouteObserver<ModalRoute<void>> observer;
+  const StartPage({Key? key, required this.observer}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -76,22 +77,31 @@ class Page1 extends StatelessWidget {
                 order: 1,
                 version: 1,
                 id: 't-1',
+                message: 'Tip content 1',
                 grouper: grouper,
-                child: const Card(child: ListTile(title: Text('Tip 1'))),
+                child: const Card(
+                  child: ListTile(title: Text('Ordered tip 1')),
+                ),
               ),
               OrderedTip(
                 order: 2,
                 version: 1,
                 id: 't-2',
+                message: 'Tip content 2',
                 grouper: grouper,
-                child: const Card(child: ListTile(title: Text('Tip 2'))),
+                child: const Card(
+                  child: ListTile(title: Text('Ordered tip 2')),
+                ),
               ),
               OrderedTip(
                 order: 3,
                 version: 1,
                 id: 't-3',
+                message: 'Tip content 3',
                 grouper: grouper,
-                child: const Card(child: ListTile(title: Text('Tip 3'))),
+                child: const Card(
+                  child: ListTile(title: Text('Ordered tip 3')),
+                ),
               ),
             ],
           ),
@@ -101,9 +111,14 @@ class Page1 extends StatelessWidget {
   }
 }
 
-class Page2 extends StatelessWidget {
+class Page2 extends StatefulWidget {
   const Page2({Key? key}) : super(key: key);
 
+  @override
+  State<Page2> createState() => _Page2State();
+}
+
+class _Page2State extends State<Page2> {
   static bool isDisable = false;
 
   @override
@@ -128,12 +143,12 @@ class Page2 extends StatelessWidget {
         children: [
           Center(
             child: SimpleTip(
-              message: 'Simple tip',
-              onClosed: () => isDisable = true,
+              message: 'Simple tip without backdrop (default)',
+              onClosed: () => setState(() => isDisable = true),
               isDisabled: isDisable,
               child: const Card(
                 child: ListTile(
-                  title: Text('Tip 1'),
+                  title: Text('Simple tip'),
                 ),
               ),
             ),
@@ -144,10 +159,15 @@ class Page2 extends StatelessWidget {
   }
 }
 
-class Page3 extends StatelessWidget {
-  static bool isDisable = false;
-
+class Page3 extends StatefulWidget {
   const Page3({Key? key}) : super(key: key);
+
+  @override
+  State<Page3> createState() => _Page3State();
+}
+
+class _Page3State extends State<Page3> {
+  static bool isDisable = false;
 
   @override
   Widget build(BuildContext context) {
@@ -162,8 +182,8 @@ class Page3 extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           SimpleTip(
-            message: 'Simple tip 1',
-            onClosed: () => isDisable = true,
+            message: 'Simple tip with backdrop',
+            onClosed: () => setState(() => isDisable = true),
             isDisabled: isDisable,
             withBackdrop: true,
             child: const Card(
@@ -173,8 +193,9 @@ class Page3 extends StatelessWidget {
             ),
           ),
           SimpleTip(
-            message: 'Simple tip 2',
-            onClosed: () => isDisable = true,
+            title: 'Some title',
+            message: 'Show together if not using OrderedTip',
+            onClosed: () => setState(() => isDisable = true),
             isDisabled: isDisable,
             withBackdrop: true,
             child: const Card(
@@ -184,8 +205,8 @@ class Page3 extends StatelessWidget {
             ),
           ),
           SimpleTip(
-            message: 'Simple tip 3',
-            onClosed: () => isDisable = true,
+            message: 'Click anywhere to close the tips',
+            onClosed: () => setState(() => isDisable = true),
             isDisabled: isDisable,
             withBackdrop: true,
             child: const Card(

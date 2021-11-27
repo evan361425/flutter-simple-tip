@@ -68,6 +68,7 @@ class TipGrouperState extends State<TipGrouper> with RouteAware {
   @override
   void didPushNext() {
     enabledTip?.disable();
+    enabledTip = null;
     super.didPushNext();
   }
 

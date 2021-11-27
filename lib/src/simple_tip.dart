@@ -189,7 +189,6 @@ class SimpleTipState extends State<SimpleTip>
   OverlayEntry? _entry;
   Timer? _showTimer;
 
-  static int _workingTips = 0;
   static OverlayEntry? _backdrop;
   static bool _backdropIsBuilt = false;
   static final List<VoidCallback> _backdropCb = <VoidCallback>[];
@@ -212,6 +211,7 @@ class SimpleTipState extends State<SimpleTip>
   @override
   void deactivate() {
     _removeEntry();
+    _removeBackdrop();
     _showTimer?.cancel();
     super.deactivate();
   }
@@ -219,6 +219,7 @@ class SimpleTipState extends State<SimpleTip>
   @override
   void dispose() {
     _removeEntry();
+    _removeBackdrop();
     _controller.dispose();
     super.dispose();
   }
@@ -267,7 +268,6 @@ class SimpleTipState extends State<SimpleTip>
         final Widget backdropOverlay = SizedBox.expand(
           child: GestureDetector(onTap: () {
             // avoid ConcurrentModificationError: changing iteration during iterate
-            _workingTips++;
             for (var cb in _backdropCb) {
               cb();
             }
@@ -278,10 +278,8 @@ class SimpleTipState extends State<SimpleTip>
         overlayState.insert(_backdrop!);
         _backdropIsBuilt = true;
         _backdropCb.add(hideEntry);
-        _workingTips = 1;
       } else {
         _backdropCb.add(hideEntry);
-        _workingTips++;
       }
     }
 
@@ -326,9 +324,6 @@ class SimpleTipState extends State<SimpleTip>
       _showTimer = null;
       _entry!.remove();
       _entry = null;
-      if (_withBackdrop && --_workingTips == 0) {
-        _removeBackdrop();
-      }
     }
   }
 
@@ -337,6 +332,5 @@ class SimpleTipState extends State<SimpleTip>
     _backdrop = null;
     _backdropIsBuilt = false;
     _backdropCb.clear();
-    _workingTips = 0;
   }
 }
