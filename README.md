@@ -8,7 +8,7 @@ A widget for showing tips to it's child that automatically setup position.
 
 > This package is separated from my project [POS-System](https://github.com/evan361425/flutter-pos-system).
 
-![SimpleTip DEMO](images/example.gif)
+<img src="images/example.gif" alt="SimpleTip DEMO" width="300"/>
 
 ## How to use
 
