@@ -4,7 +4,7 @@ import 'package:simple_tip/simple_tip.dart';
 
 void main() {
   test('fulfill test coverage', () {
-    final border = TipShapeBorder(target: Offset.zero);
+    const border = TipShapeBorder(target: Offset.zero);
 
     border.getInnerPath(Rect.zero);
 

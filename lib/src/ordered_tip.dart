@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'simple_tip.dart';
-import 'state_manager/in_memory_state_manager.dart';
+import 'tip_grouper.dart';
 import 'state_manager/state_manager.dart';
 
 /// Tips show in order.
@@ -11,9 +11,10 @@ import 'state_manager/state_manager.dart';
 /// Example:
 /// ```
 /// Widget build(context) {
+///   final key = GlobalKey<TipGrouperState>();
 ///   return OrderedTip(
-///     groupId: 'group1',
 ///     id: 'id1',
+///     grouper: key,
 ///     order: 1,
 ///     message: 'Tip for profile',
 ///     child: TextButton(
@@ -24,34 +25,16 @@ import 'state_manager/state_manager.dart';
 /// }
 /// ```
 class OrderedTip extends StatefulWidget {
-  /// Groups of all ordered tip.
-  ///
-  /// Expose this for public is only make developer easier controll
-  /// their resources, you **SHOULD NOT** depends this.
-  ///
-  /// It may set to `private` in future.
-  static final groups = <String, _RadioGroup>{};
-
-  /// Manage the versions state.
-  ///
-  /// You should extends [StateManager] for your own state
-  /// manager, eg: shared_preferences or Hive.
-  ///
-  /// See details in https://pub.dev/packages/simple_tip
-  static StateManager stateManager = InMemoryStateManager();
-
   /// ID of this tip.
   ///
   /// It should be unique in the same group
   final String id;
 
-  /// ID of the group that contains many [OrderedTip]
-  ///
-  /// It should be unique between each groups.
+  /// State of grouper that contains many [OrderedTip]
   ///
   /// If one screen have multiple groups, it is possible to
   /// show many tips in one screen.
-  final String groupId;
+  final GlobalKey<TipGrouperState> grouper;
 
   /// Title of [SimpleTip]
   ///
@@ -150,10 +133,10 @@ class OrderedTip extends StatefulWidget {
   /// {@macro flutter.widgets.ProxyWidget.child}
   final Widget child;
 
-  OrderedTip({
+  const OrderedTip({
     Key? key,
     required this.id,
-    required this.groupId,
+    required this.grouper,
     this.title,
     this.message,
     this.content,
@@ -166,55 +149,28 @@ class OrderedTip extends StatefulWidget {
     this.margin = const EdgeInsets.symmetric(horizontal: 16.0),
     this.verticalOffset = 24.0,
     this.closerText = 'OK',
-    this.waitDuration = Duration.zero,
+    this.waitDuration = const Duration(milliseconds: 300),
     this.excludeFromSemantics = false,
     this.preferBelow = true,
     required this.child,
-  }) : super(key: key) {
-    group.addCandidate(id: id, version: version, order: order);
-  }
-
-  _RadioGroup get group {
-    var group = groups[groupId];
-    if (group == null) {
-      group = _RadioGroup(groupId);
-      groups[groupId] = group;
-    }
-
-    return group;
-  }
+  }) : super(key: key);
 
   @override
-  _OrderedTipState createState() => _OrderedTipState();
+  OrderedTipState createState() => OrderedTipState();
 }
 
-/// Item pass to [StateManager]
-class OrderedTipItem {
-  /// ID for each tip.
-  final String id;
+class OrderedTipState extends State<OrderedTip> with TipItem {
+  bool retired = false;
 
-  /// Showing order.
-  final int order;
+  bool isEnabled = false;
 
-  /// Version of this tip.
-  ///
-  /// It is useful when you need to controll different user using different
-  /// tip.
-  final int version;
+  @override
+  String get id => widget.id;
 
-  late VoidCallback _builder;
+  int get order => widget.order;
 
-  OrderedTipItem({
-    required this.id,
-    required this.version,
-    required this.order,
-  });
-}
-
-class _OrderedTipState extends State<OrderedTip> {
-  _RadioGroup get group => widget.group;
-
-  bool get isDisabled => widget.group.isNotLeader(widget.id);
+  @override
+  int get version => widget.version;
 
   @override
   Widget build(BuildContext context) {
@@ -232,108 +188,38 @@ class _OrderedTipState extends State<OrderedTip> {
       waitDuration: widget.waitDuration,
       excludeFromSemantics: widget.excludeFromSemantics,
       preferBelow: widget.preferBelow,
-      isDisabled: isDisabled,
-      onClosed: () => widget.group.retire(widget.id),
+      isDisabled: !isEnabled,
+      onClosed: () {
+        retired = true;
+        final grouper = widget.grouper.currentState;
+
+        grouper?.widget.stateManager.tipRead(grouper.widget.id, this);
+        grouper?.raiseElection();
+      },
       child: widget.child,
     );
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-    widget.group.removeCandidate(widget.id);
+  void disable() {
+    if (mounted) {
+      setState(() {
+        retired = true;
+        isEnabled = false;
+      });
+    }
+  }
+
+  Future<void> enable() async {
+    if (mounted) {
+      setState(() {
+        isEnabled = true;
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
-
-    final g = group;
-    g.setupBuilder(widget.id, () => setState(() {}));
-    if (g.isNotReady) {
-      g.startElection();
-    }
-  }
-}
-
-class _RadioGroup {
-  String? leader;
-
-  List<OrderedTipItem> sortedCandidates = <OrderedTipItem>[];
-
-  final candidates = <String, OrderedTipItem>{};
-
-  final String groupId;
-
-  _RadioGroup(this.groupId);
-
-  bool get isNotReady => sortedCandidates.length != candidates.length;
-
-  void addCandidate({
-    required String id,
-    required int version,
-    required int order,
-  }) {
-    if (candidates[id] == null) {
-      candidates[id] = OrderedTipItem(
-        id: id,
-        order: order,
-        version: version,
-      );
-    }
-  }
-
-  /// Disable all if current is not set
-  bool isNotLeader(String id) {
-    return leader == null ? true : leader != id;
-  }
-
-  void removeCandidate(String id) {
-    candidates.remove(id);
-    if (candidates.isEmpty) {
-      OrderedTip.groups.remove(groupId);
-    }
-  }
-
-  void reset() {
-    final oldLeader = leader;
-    startElection();
-    if (oldLeader != leader) {
-      candidates[oldLeader]?._builder();
-      candidates[leader]?._builder();
-    }
-  }
-
-  void retire(String id) async {
-    await OrderedTip.stateManager.tipRead(groupId, candidates[id]!);
-    // there is no tip enabled, now we can research
-    reset();
-  }
-
-  void setup() {
-    sortedCandidates = candidates.values.toList()
-      ..sort((a, b) => a.order.compareTo(b.order));
-  }
-
-  void setupBuilder(String id, VoidCallback builder) {
-    if (candidates[id] != null) {
-      candidates[id]!._builder = builder;
-    }
-  }
-
-  void startElection() {
-    if (isNotReady) setup();
-
-    if (leader != null) {
-      final oldLeader = leader;
-      leader = null;
-      candidates[oldLeader]?._builder();
-    }
-    for (final candidate in sortedCandidates) {
-      if (OrderedTip.stateManager.shouldShow(groupId, candidate)) {
-        leader = candidate.id;
-        break;
-      }
-    }
+    widget.grouper.currentState?.nominate(this);
   }
 }

@@ -18,5 +18,4 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  # code style
-  pedantic: ^1.11.0
+  flutter_lints: ^1.0.0
