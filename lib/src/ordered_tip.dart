@@ -34,7 +34,7 @@ class OrderedTip extends StatefulWidget {
   ///
   /// If one screen have multiple groups, it is possible to
   /// show many tips in one screen.
-  final GlobalKey<TipGrouperState> grouper;
+  final GlobalKey<TipGrouperState>? grouper;
 
   /// Title of [SimpleTip]
   ///
@@ -136,7 +136,7 @@ class OrderedTip extends StatefulWidget {
   const OrderedTip({
     Key? key,
     required this.id,
-    required this.grouper,
+    this.grouper,
     this.title,
     this.message,
     this.content,
@@ -174,6 +174,8 @@ class OrderedTipState extends State<OrderedTip> with TipItem {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.grouper == null) return widget.child;
+
     return SimpleTip(
       title: widget.title,
       message: widget.message,
@@ -191,7 +193,7 @@ class OrderedTipState extends State<OrderedTip> with TipItem {
       isDisabled: !isEnabled,
       onClosed: () {
         retired = true;
-        final grouper = widget.grouper.currentState;
+        final grouper = widget.grouper!.currentState;
 
         grouper?.widget.stateManager.tipRead(grouper.widget.id, this);
         grouper?.raiseElection();
@@ -220,6 +222,6 @@ class OrderedTipState extends State<OrderedTip> with TipItem {
   @override
   void initState() {
     super.initState();
-    widget.grouper.currentState?.nominate(this);
+    widget.grouper?.currentState?.nominate(this);
   }
 }
