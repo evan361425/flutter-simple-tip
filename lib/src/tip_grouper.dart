@@ -7,20 +7,31 @@ import 'state_manager/state_manager.dart';
 class TipGrouper extends StatefulWidget {
   static StateManager defaultStateManager = InMemoryStateManager();
 
+  /// Child
   final Widget child;
 
+  /// Group id pass to state manager
   final String id;
 
+  /// State manager for this tip group.
+  ///
+  /// Default using [defaultStateManager]
   final StateManager stateManager;
 
+  /// Observing route changed.
+  ///
+  /// Pass this for monitor new page push.
   final RouteObserver? routeObserver;
 
-  final int candidateLenght;
+  /// Total tips inside this grouper
+  ///
+  /// This will help start election when all candidates built.
+  final int candidateLength;
 
   TipGrouper({
     Key? key,
     required this.id,
-    required this.candidateLenght,
+    required this.candidateLength,
     StateManager? stateManager,
     this.routeObserver,
     required this.child,
@@ -81,7 +92,7 @@ class TipGrouperState extends State<TipGrouper> with RouteAware {
   void nominate(OrderedTipState candidate) {
     final oldLength = candidates.length;
     candidates[candidate.id] = candidate;
-    if (oldLength + 1 == widget.candidateLenght) {
+    if (oldLength + 1 == widget.candidateLength) {
       Future<void>.delayed(Duration.zero).then((_) => raiseElection());
     }
   }

@@ -51,7 +51,7 @@ class Page1 extends StatelessWidget {
     return TipGrouper(
       key: grouper,
       id: 'group',
-      candidateLenght: 3,
+      candidateLength: 3,
       routeObserver: observer,
       child: Scaffold(
         appBar: AppBar(
