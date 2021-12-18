@@ -92,6 +92,7 @@ class TipGrouperState extends State<TipGrouper> with RouteAware {
   @override
   void dispose() {
     enabledTip?.disable();
+    widget.routeObserver?.unsubscribe(this);
     super.dispose();
   }
 
