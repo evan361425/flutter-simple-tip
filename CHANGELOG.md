@@ -1,3 +1,8 @@
+## v0.3.2 2021-12-19
+
+- Allow disabled tips in grouper
+- Allow null grouper
+
 ## v0.3.1 2021-11-27
 
 - Allow disabled tips in grouper
